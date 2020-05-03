@@ -26,3 +26,6 @@ hards.each do |question|
 end
 
 Question.purge
+Question
+    .find_by(text: 'In an Olympic-size pool,which is 50-meters long,about how many lengths would you have to swim in order to swim a mile?')
+    .update!(answer: '32')

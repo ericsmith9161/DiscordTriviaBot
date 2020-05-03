@@ -49,8 +49,7 @@ const playTrivia = async (message) => {
     );
     current.set(message.guild.id, question);
     message.channel.send(
-      question.text +
-        "\nYou have 30 seconds to answer! Type ? before your response. Only your first response will be counted."
+      `**${question.text}**\nYou have 30 seconds to answer! Type ? before your response. The first person to answer correctly wins. This question is worth ${question.value} ${question.value == 1 ? 'point' : 'points'}.`
     );
     getResponses(question, message);
     return;
@@ -65,8 +64,9 @@ const getQuestion = async (url) => {
   try {
     const response = await fetch(url);
     const question = await response.json();
-    question.responders = [];
-    question.correct = [];
+    console.log(question)
+    question.responder = null;
+    question.answered = false;
     return question;
   } catch (err) {
     console.log(err);
@@ -74,67 +74,71 @@ const getQuestion = async (url) => {
 };
 
 const check = (message, answer) => {
+  const nums = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  const chars = answer.split('');
+  const isNum = char => nums.includes(char);
+  const numAnswer = chars.every(isNum);
   const response = [
     {
       response: message.content.slice(2),
       player: message.author.username,
     },
   ];
-  const fuse = new Fuse(response, { keys: ["response"] });
+  const fuse = numAnswer
+    ? new Fuse(response, { keys: ["response"], threshold: 0.0 })
+    : new Fuse(response, { keys: ["response"], threshold: 0.4 });
   return fuse.search(answer);
 };
 
 const getResponses = async (question, message) => {
   const filter = (message) => {
     if (
-      message.content.startsWith(answer_prefix) &&
-      !question.responders.includes(message.author.username)
+      message.content.startsWith(answer_prefix)
     ) {
-      question.responders.push(message.author.username);
       const match = check(message, question.answer);
-      return match.length ? true : false;
+      if (match.length) {
+        question.answered = true;
+        question.responder = message.author.username;
+        return true;
+      } else {
+        return false;
+      };
     } else {
       return false;
     }
   };
 
   const collector = message.channel.createMessageCollector(filter, {
-    time: 30000,
+    time: 30000, max: 1
   });
 
   collector.on("collect", async (msg) => {
-    question.correct.push(msg.author.username);
-
-    try {
-      const player = await getPlayer(
-        `${url}/players?player=${msg.author.username}&server=${msg.guild.id}`
-      );
-      const id = player.id;
-      const value = question.value;
-      try {
-        await addPoints(`${url}/players/${id}?value=${value}`);
-      } catch (err) {
-        console.error(err);
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    console.log(`Collected ${msg.content} by ${msg.author.username}.`)
   });
 
   collector.on("end", async (collected) => {
-    console.log(`Collected ${collected.size} items`);
-    let correct = question.correct.length
-      ? `The following players answered correctly: ${question.correct.join(
-          " , "
-        )}`
-      : "Nobody answered correctly!";
-
-    message.channel.send(
-      `${correct}\nThe correct answer was: ${question.answer}`
-    );
-    await getLeader(message);
-    current.delete(message.guild.id);
-  });
+    console.log(`Collection ended.`);
+    try {
+      if (question.answered) {
+        const player = await getPlayer(
+          `${url}/players?player=${question.responder}&server=${message.guild.id}`
+        );
+        const id = player.id;
+        const value = question.value;
+        await addPoints(`${url}/players/${id}?value=${value}`);
+      };
+      const correct = question.answered
+        ? `${question.responder} got it!`
+        : "Whomp whomp. Nobody answered correctly!";
+      message.channel.send(
+        `${correct}\nThe correct answer was: **${question.answer}**`
+      );
+      await getLeader(message);
+    } catch (err) {
+      console.error(err);
+    }
+    return current.delete(message.guild.id);
+  }); 
 };
 
 const clear = async (message) => {
