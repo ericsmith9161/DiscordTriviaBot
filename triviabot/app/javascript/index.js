@@ -6,7 +6,7 @@ const Fuse = require("fuse.js");
 const client = new Discord.Client();
 client.login(process.env.DISCORD_TOKEN);
 
-const url = "http://localhost:3001";
+const url = `http://localhost:${process.env.PORT}`;
 const prefix = "!";
 const answer_prefix = "?";
 const current = new Map();
@@ -64,7 +64,6 @@ const getQuestion = async (url) => {
   try {
     const response = await fetch(url);
     const question = await response.json();
-    console.log(question)
     question.responder = null;
     question.answered = false;
     return question;
@@ -86,7 +85,7 @@ const check = (message, answer) => {
   ];
   const fuse = numAnswer
     ? new Fuse(response, { keys: ["response"], threshold: 0.0 })
-    : new Fuse(response, { keys: ["response"], threshold: 0.4 });
+    : new Fuse(response, { keys: ["response"], threshold: 0.3 });
   return fuse.search(answer);
 };
 

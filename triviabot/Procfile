@@ -1,0 +1,2 @@
+web: bundle exec puma -t 5.5 -p ${process.env.PORT} -e ${process.env.RACK_ENV}
+worker: npm run start 

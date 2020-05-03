@@ -2,8 +2,8 @@
   "name": "triviabot",
   "private": true,
   "scripts": {
-    "bot": "node app/javascript/index.js",
-    "start": "(bundle exec rails server) & npm run bot"
+    "start": "node app/javascript/index.js",
+    "both": "(bundle exec rails server) & npm run start"
   },
   "dependencies": {
     "@rails/webpacker": "5.1.1",
