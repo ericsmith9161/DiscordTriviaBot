@@ -1,5 +1,18 @@
 {
   "name": "triviabot",
   "private": true,
-  "dependencies": {}
+  "scripts": {
+    "bot": "node app/javascript/index.js",
+    "start": "(bundle exec rails server) & npm run bot"
+  },
+  "dependencies": {
+    "@rails/webpacker": "5.1.1",
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0",
+    "fuse.js": "^5.2.3",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^3.10.3"
+  }
 }

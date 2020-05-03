@@ -1,11 +1,13 @@
 class QuestionsController < ApplicationController
 
-  # GET /questions?num=5&diff=easy
   def index
-    question = Question.ask_question
+    question = Question.random(params[:difficulty])
     render json: question
   end
 
-end
+  def destroy
+    Question.delete(params[:id])
+    render json: { response: "Question deleted" }
+  end
 
-# params[:difficulty]
+end

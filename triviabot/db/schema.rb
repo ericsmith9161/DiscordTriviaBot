@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_25_190519) do
+ActiveRecord::Schema.define(version: 2020_05_02_233047) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,11 +18,13 @@ ActiveRecord::Schema.define(version: 2020_04_25_190519) do
   create_table "players", force: :cascade do |t|
     t.string "name", null: false
     t.integer "score", default: 0, null: false
-    t.index ["name"], name: "index_players_on_name", unique: true
+    t.string "server", null: false
+    t.index ["name"], name: "index_players_on_name"
+    t.index ["server", "name"], name: "index_players_on_server_and_name", unique: true
   end
 
   create_table "questions", force: :cascade do |t|
-    t.text "question_text", null: false
+    t.text "text", null: false
     t.string "answer", null: false
     t.string "category", null: false
     t.integer "value", null: false

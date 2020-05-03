@@ -1,0 +1,1 @@
+{"ast":null,"code":"'use strict';\n\nmodule.exports = function (client, packet) {\n  client.emit('debug', \"[VOICE] received voice server: \".concat(JSON.stringify(packet)));\n  client.voice.onVoiceServer(packet.d);\n};","map":null,"metadata":{},"sourceType":"module"}

@@ -10,8 +10,8 @@
 
 require 'csv'
 
-easy_q_a_arr = CSV.read("/Users/Eric/Desktop/trivia/triviabot/db/easy.csv", { :col_sep => "\t" })
-hard_q_a_arr = CSV.read("/Users/Eric/Desktop/trivia/triviabot/db/hard.csv", { :col_sep => "\t" })
+easy_q_a_arr = CSV.read("/Users/akifsaifi/dev/discord_bots/DiscordTriviaBot/triviabot/db/easy.csv", { :col_sep => "\t" })
+hard_q_a_arr = CSV.read("/Users/akifsaifi/dev/discord_bots/DiscordTriviaBot/triviabot/db/hard.csv", { :col_sep => "\t" })
 
 
 easy_q_a_arr.each do |question|
@@ -22,3 +22,4 @@ hard_q_a_arr.each do |question|
     Question.create!( question_text: question[0], answer: question[1], value: 2, category: "HARD")
 end
 
+Question.purge

@@ -1,39 +1,26 @@
 class PlayersController < ApplicationController
 
-  # print out the top players
-  # GET /players?player=jaedashson
-  # GET /players
-  # GET /players?limit=10
   def index
 
     if params[:player]
-      top_players = Player.find_by(name: params[:player])
+      data = Player.find_by(name: params[:player], server: params[:server])
     else 
       if params[:limit]
-        top_players = Player.select(:name, :score).order('score DESC').limit(params[:limit])
+        data = Player.select(:name, :score).where(server: params[:server]).order('score DESC').limit(params[:limit])
       else
-        top_players = Player.select(:name, :score).order('score DESC').limit(5)
+        data = Player.select(:name, :score).where(server: params[:server]).order('score DESC').limit(5)
       end
     end
-     
-    render json: top_players    
-  end
-
-  #  if params.has_key?(:user)
-  #           users = User.where("username LIKE '%#{params[:user]}%'")
-  #       else
-  #           users = User.all
-  #       end
-  #       render json: users
-
-  # print out queried player
-  # GET /players?id=1
-  def show
-    player = Player.select(:name, :score).where("name LIKE ?", params[:name])
+    
+    if data
+      render json: data    
+    else
+      render json: { error: "No record in db" }
+    end
   end
 
   def create
-    @player = Player.new(name: params[:name])
+    @player = Player.new(name: params[:player], server: params[:server])
     if @player.save
         render json: @player
     else
@@ -41,10 +28,6 @@ class PlayersController < ApplicationController
     end
   end
 
-  
-  # Custom route?
-  # params[:ids] => [1, 2, 3, 4]
-  # params[:value] => 2
   def update
     @player = Player.find_by(id: params[:id])
 

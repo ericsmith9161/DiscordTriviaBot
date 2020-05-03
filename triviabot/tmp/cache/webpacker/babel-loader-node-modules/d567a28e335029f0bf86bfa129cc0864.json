@@ -1,0 +1,1 @@
+{"ast":null,"code":"'use strict';\n\nmodule.exports = function (client, packet) {\n  client.actions.MessageReactionRemoveAll.handle(packet.d);\n};","map":null,"metadata":{},"sourceType":"module"}

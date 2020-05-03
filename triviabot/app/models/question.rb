@@ -1,12 +1,17 @@
 class Question < ApplicationRecord
+  validates :text, :answer, :value, :category, presence: true
 
-  def self.ask_question(diff = "EASY")
+  def self.purge
+    ids = Question
+      .where("text LIKE '%of the following%' OR text LIKE '%these%'")
+      .pluck(:id)
+    Question.delete(ids)
+  end
 
-    good_questions = Question.where('category = ?', diff)
-    
-    offset = rand(good_questions.count)
-    good_questions.offset(offset).first
-
+  def self.random(diff)
+    questions = Question.where('category = ?', diff)
+    offset = rand(questions.count)
+    questions.offset(offset).first
   end
 
 end

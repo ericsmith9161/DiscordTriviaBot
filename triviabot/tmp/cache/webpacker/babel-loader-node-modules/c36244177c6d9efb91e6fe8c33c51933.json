@@ -1,0 +1,1 @@
+{"ast":null,"code":"'use strict';\n\nmodule.exports = function (client, packet, shard) {\n  client.actions.GuildMemberRemove.handle(packet.d, shard);\n};","map":null,"metadata":{},"sourceType":"module"}
