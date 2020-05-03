@@ -38,6 +38,10 @@ client.on("message", async (message) => {
 });
 
 const playTrivia = async (message) => {
+  if (current.get(message.guild.id)) {
+    return message.channel.send("A question is currently in play.")
+  };
+
   const args = message.content.split(" ");
   try {
     let question = await getQuestion(
@@ -61,7 +65,6 @@ const getQuestion = async (url) => {
   try {
     const response = await fetch(url);
     const question = await response.json();
-    console.log(question);
     question.responders = [];
     question.correct = [];
     return question;
@@ -73,7 +76,7 @@ const getQuestion = async (url) => {
 const check = (message, answer) => {
   const response = [
     {
-      response: message.content.slice(3),
+      response: message.content.slice(2),
       player: message.author.username,
     },
   ];
@@ -191,7 +194,7 @@ const getPlayer = async (url) => {
     player = await get_response.json();
   } catch (err) {
     console.log(err);
-  }
+  };
 
   if (player.error) {
     try {
